@@ -1,6 +1,7 @@
 using Application.Interfaces;
 using Application.Services;
 using Infrastructure;
+using Infrastructure.Filters;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,7 +22,9 @@ namespace WebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers(options =>
+                options.Filters.Add(new ErrorFilter())
+            );
             services.AddSwaggerGen();
             services.AddPersistence(Configuration);
             services.AddAutoMapper(typeof(Startup));
