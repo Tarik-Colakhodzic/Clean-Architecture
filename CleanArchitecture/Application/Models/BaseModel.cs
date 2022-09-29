@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Domain
+namespace Application.Models
 {
-    public abstract class BaseEntity<T>
+    public class BaseModel<T>
     {
         public T Id { get; set; }
         public DateTime DateCreated { get; set; }
