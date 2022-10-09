@@ -22,5 +22,11 @@ namespace WebApi.Controllers
         {
             return Ok(await _movieService.GetAllAsync());
         }
+
+        [HttpGet("GetById")]
+        public async Task<ActionResult<List<MovieModel>>> GetByIdAsync(int id)
+        {
+            return Ok(await _movieService.GetByIdAsync(id));
+        }
     }
 }

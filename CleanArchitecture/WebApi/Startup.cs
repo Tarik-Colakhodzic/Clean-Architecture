@@ -1,5 +1,7 @@
 using Application.Interfaces;
+using Application.Mapper;
 using Application.Services;
+using AutoMapper;
 using Infrastructure;
 using Infrastructure.Filters;
 using Microsoft.AspNetCore.Builder;
@@ -27,7 +29,7 @@ namespace WebApi
             );
             services.AddSwaggerGen();
             services.AddPersistence(Configuration);
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(MapperProfile));
 
             services.AddScoped<IMovieService, MovieService>();
         }
