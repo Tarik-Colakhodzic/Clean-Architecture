@@ -1,4 +1,5 @@
 ﻿using Domain.Exceptions;
+using Infrastructure.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -15,7 +16,9 @@ namespace Infrastructure.Filters
         {
             _exceptionHandlers = new Dictionary<Type, Action<ExceptionContext>>
             {
-                { typeof(UserException), HandleUserException}
+                { typeof(CoreException), HandleCoreException },
+                { typeof(ApplicationException), HandleApplicationException },
+                { typeof(InfrastructureException), HandleInfrastructureException }
             };
         }
 
@@ -54,19 +57,57 @@ namespace Infrastructure.Filters
             context.ExceptionHandled = true;
         }
 
-        private void HandleUserException(ExceptionContext context)
+        private void HandleCoreException(ExceptionContext context)
         {
-            UserException exception = context.Exception as UserException;
+            CoreException exception = context.Exception as CoreException;
+
+            ProblemDetails details = new ProblemDetails()
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = exception.Message,
+            };
+
+            context.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
+            };
+
+            context.ExceptionHandled = true;
+        }
+
+        private void HandleApplicationException(ExceptionContext context)
+        {
+            CoreException exception = context.Exception as CoreException;
 
             ProblemDetails details = new ProblemDetails()
             {
                 Status = StatusCodes.Status400BadRequest,
-                Title = exception.Message
+                Title = exception.Message,
+                Detail = exception.InnerException?.Message
             };
 
             context.Result = new ObjectResult(details)
             {
                 StatusCode = StatusCodes.Status400BadRequest
+            };
+
+            context.ExceptionHandled = true;
+        }
+
+        private void HandleInfrastructureException(ExceptionContext context)
+        {
+            CoreException exception = context.Exception as CoreException;
+
+            ProblemDetails details = new ProblemDetails()
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = exception.Message,
+                Detail = exception.InnerException?.Message
+            };
+
+            context.Result = new ObjectResult(details)
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
             };
 
             context.ExceptionHandled = true;
